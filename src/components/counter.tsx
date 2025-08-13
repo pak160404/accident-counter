@@ -2,7 +2,6 @@ import React, { useReducer } from 'react';
 //all of these types because typescript in strict mode and it want type safety
 type State ={
   count: number;
-  input: number;
 }
 
 // Define possible action types (using a union type for safety)
@@ -11,7 +10,7 @@ type Action =
   |{ type: 'Increment' }
   | { type: 'Decrement' }
   | { type: 'Reset' }
-  | { type: 'Update' }
+  | { type: 'Update' ; payload: number }
   | { type: 'Set'; payload: number };
 
 const Counter = () => {
@@ -32,7 +31,7 @@ const Counter = () => {
 
   const reducer = (state:State, action:Action)=> {
     switch(action.type) {
-      case Activities.Plus:
+      case "Increment"://do this and it's the same with Activities.Plus
         return {
           ...state, //copy all properties of state, override count
           count: state.count + 1
@@ -50,12 +49,12 @@ const Counter = () => {
       case Activities.Update:
         return {
           ...state,
-          count: state.input  // Copy input to count
+          count: isNaN(action.payload)  ? 0 : action.payload// Copy input to count
         };
       case Activities.Set:
         return {
           ...state,
-          input: action.payload  // Update input value
+          count: action.payload  // Update input value
         };
       default:
         return state;
@@ -86,15 +85,15 @@ const Counter = () => {
       <div>
         <form onSubmit={(e) => {
           e.preventDefault();
-          dispatch({type: Activities.Update});
+          dispatch({type: Activities.Update, payload: state.count});
         }}>
           {/* ✅ Input field shows and updates input value */}
           <input
             type="number"
-            value={state.input}  // Show input value
+            value={state.count}  // Show input value
             onChange={(e) => dispatch({
               type: Activities.Set,
-              payload: Number(e.target.value)
+              payload: e.target.valueAsNumber
             })}
           />
           <button type="submit">Update Counter</button>
@@ -103,7 +102,7 @@ const Counter = () => {
 
       {/* Debug info to see both values */}
       <div className="text-sm text-gray-500">
-        Count: {state.count} | Input: {state.input}
+        Count: {state.count} | Input: {state.count}
       </div>
     </section>
   );
